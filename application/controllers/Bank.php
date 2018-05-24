@@ -19,12 +19,12 @@ class Bank extends CI_Controller {
          
        
     }
-
-    public function index() {
+ 
+    public function index() { 
 //        list($username, $password) = explode(':', base64_decode(substr($this->input->server('HTTP_AUTHORIZATION'), 6)));
         $api_key = $this->input->post('API-KEY');
         if ($api_key != "sdfwsdfds7d7sdsdfwsdfds7d7sd") {
-           echo json_encode( array("status" => 'fail', "data" => NULL, "message" => "Error xyz has occurred"));
+           echo json_encode( array("status" => 'fail', "data" => NULL, "message" => "No access"));
         } else {
             echo json_encode(array("status" => 'success', "data" => array("test"=>1,"test2"=>2,), "message" => "test message"));
         }
