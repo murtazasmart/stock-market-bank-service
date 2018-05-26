@@ -21,5 +21,17 @@ class AccountModel extends CI_Model {
          $sql = "SELECT * FROM `bankaccount` where accountNumber='$id'";
         return $this->db->query($sql)->result();
     }
+    
+    public function validateAccountName($name) {
+             $sql = "SELECT * FROM `bankaccount` where name='$name'";
+             return count($this->db->query($sql)->result());
+    }
+    public function createNewAccount($name) {
+            $sql="INSERT INTO `bankaccount` (`accountNumber`, `name`, `createdTime`, `updateTime`) VALUES (NULL, '$name', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+            $this->db->query($sql);
+            $last_id= $this->db->insert_id();
+            return $last_id;
+            
+    }
 
 }

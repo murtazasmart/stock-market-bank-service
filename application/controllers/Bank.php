@@ -11,7 +11,7 @@ require APPPATH . 'libraries/REST_Controller.php';
 
 class Bank extends REST_Controller {
 
-    function __construct() {     
+    function __construct() {
         parent::__construct();
         $this->load->model("AccountModel");
     }
@@ -55,6 +55,38 @@ class Bank extends REST_Controller {
                 'status' => FALSE,
                 'message' => 'Account could not be found'
                     ], REST_Controller::HTTP_NOT_FOUND); // NOT_FOUND (404) being the HTTP response code
+        }
+    }
+
+    public function account_post() {
+        $Name = $this->input->post('Name');
+        if ($Name == "" || $Name == NULL) {
+            $this->response([
+                'status' => FALSE,
+                'message' => 'Invalid Account Name'
+                    ], REST_Controller::HTTP_BAD_REQUEST);
+        }
+        $count = $this->AccountModel->validateAccountName($Name);
+        if ($count != 0) {
+            $this->set_response([
+                'status' => FALSE,
+                'message' => 'Account name duplicate'
+                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+        } else {
+           $accountNumber= $this->AccountModel->createNewAccount($Name);
+           if($accountNumber =='' || $accountNumber == NULL){
+               $this->set_response([
+                'status' => FALSE,
+                'message' => 'Account Not Created'
+                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+           } else {
+                 $message = [
+                     'accountNumber' => $accountNumber,
+                    'Name' => $Name,
+                    'message' => 'Added new account'
+                ];
+                 $this->set_response($message, REST_Controller::HTTP_CREATED); // CREATED (201) being the HTTP response code
+           }
         }
     }
 
