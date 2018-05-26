@@ -1,37 +1,61 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * Description of Bank
  *
- * @author Ulaleka
+ * @author Lalendra
  */
-class Bank extends CI_Controller {
+require APPPATH . 'libraries/REST_Controller.php';
 
-    public function __construct() {
-        
+class Bank extends REST_Controller {
+
+    function __construct() {     
         parent::__construct();
-         
-       
+        $this->load->model("AccountModel");
     }
- 
-    public function index() { 
-//        list($username, $password) = explode(':', base64_decode(substr($this->input->server('HTTP_AUTHORIZATION'), 6)));
-        $api_key = $this->input->post('API-KEY');
-        if ($api_key != "sdfwsdfds7d7sdsdfwsdfds7d7sd") {
-           echo json_encode( array("status" => 'fail', "data" => NULL, "message" => "No access"));
-        } else {
-            echo json_encode(array("status" => 'success', "data" => array("test"=>1,"test2"=>2,), "message" => "test message"));
+
+    public function account_get() {
+        $id = $this->get('id');
+
+        if ($id === NULL) {
+            $accounts = $this->AccountModel->getAllAccount();
+
+            if (!empty($accounts)) {
+                // Set the response and exit
+                $this->response($accounts, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
+            } else {
+                // Set the response and exit
+                $this->response([
+                    'status' => FALSE,
+                    'message' => 'No Account Found'
+                        ], REST_Controller::HTTP_NOT_FOUND); // NOT_FOUND (404) being the HTTP response code
+            }
         }
-    }
-    public function createNewAccount() {
-       $name=$this->input->post('name');
-      
+
+        $id = (int) $id;
+
+        // Validate the id.
+        if ($id <= 0) {
+            // Invalid id, set the response and exit.
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST); // BAD_REQUEST (400) being the HTTP response code
+        }
+
+
+        //getting account data
+        $account = $this->AccountModel->getAccountDetails($id);
+
+
+        if (!empty($account)) {
+            $this->set_response($account, REST_Controller::HTTP_OK); // OK (200) being the HTTP response code
+        } else {
+            //account not found
+            $this->set_response([
+                'status' => FALSE,
+                'message' => 'Account could not be found'
+                    ], REST_Controller::HTTP_NOT_FOUND); // NOT_FOUND (404) being the HTTP response code
+        }
     }
 
 }
