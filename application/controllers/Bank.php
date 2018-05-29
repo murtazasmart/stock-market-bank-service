@@ -196,4 +196,30 @@ class Bank extends REST_Controller {
         }
     }
 
+    public function statement_get() {
+        $id = $this->get('id');
+        if ($id === NULL || $id <= 0) {
+            $this->set_response([
+                'status' => FALSE,
+                'message' => 'Invalid request'
+                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+        }
+        $validateAcount = $this->AccountModel->validateAccountNumber($id);
+
+
+        if ($validateAcount) { //account number validate
+            $st = $this->TransactionModel->getBanakStatement($id);
+            $message = [
+                'accountNumber' => $id, 
+                'data' => $st,
+            ];
+            $this->set_response($message, REST_Controller::HTTP_OK);
+        } else {
+            $this->set_response([
+                'status' => FALSE,
+                'message' => 'Account could not be found'
+                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+        }
+    }
+
 }

@@ -24,5 +24,10 @@ class TransactionModel extends CI_Model {
         return $res[0]->balace;
         
     }
+    public function getBanakStatement($id) {
+        $sql="SELECT tid,if(credit=0,'debit','credit') as 'type',if(credit=0,debit,credit) as 'amount',time,description FROM `transaction` WHERE accountnumber='$id' ORDER BY tid";
+        return $this->db->query($sql)->result();
+         
+    }
 
 }
