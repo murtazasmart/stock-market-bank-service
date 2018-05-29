@@ -17,28 +17,37 @@ class AccountModel extends CI_Model {
         $sql = "SELECT * FROM `bankaccount`";
         return $this->db->query($sql)->result();
     }
+
     public function getAccountDetails($id) {
-         $sql = "SELECT * FROM `bankaccount` where accountNumber='$id'";
+        $sql = "SELECT * FROM `bankaccount` where accountNumber='$id'";
         return $this->db->query($sql)->result();
     }
-    
+
     public function validateAccountName($name) {
-             $sql = "SELECT * FROM `bankaccount` where name='$name'";
-             return count($this->db->query($sql)->result());
+        $sql = "SELECT name FROM `bankaccount` where name='$name'";
+        return count($this->db->query($sql)->result());
     }
+
+    public function validateAccountNumber($accountNumber) { 
+        $sql = "SELECT accountNumber FROM `bankaccount` where accountNumber='$accountNumber'";
+        if(count($this->db->query($sql)->result())>0){  
+            return TRUE;
+        }  else {
+            return FALSE;
+        }
+    }
+
     public function createNewAccount($name) {
-            $sql="INSERT INTO `bankaccount` (`accountNumber`, `name`, `createdTime`, `updateTime`) VALUES (NULL, '$name', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
-            $this->db->query($sql);
-            $last_id= $this->db->insert_id();
-            return $last_id;
-            
+        $sql = "INSERT INTO `bankaccount` (`accountNumber`, `name`, `createdTime`, `updateTime`) VALUES (NULL, '$name', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+        $this->db->query($sql);
+        $last_id = $this->db->insert_id();
+        return $last_id;
     }
-   
+
     public function deleteAccount($accountNumber) {
-     
-             $sql = "Delete FROM `bankaccount` where accountNumber='$accountNumber'";
-             return $this->db->query($sql);
-    
+
+        $sql = "Delete FROM `bankaccount` where accountNumber='$accountNumber'";
+        return $this->db->query($sql);
     }
 
 }

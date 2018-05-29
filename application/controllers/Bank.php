@@ -101,11 +101,99 @@ class Bank extends REST_Controller {
         }
     }
 
+    public function balance_get() {
+        $id = $this->get('id');
+
+
+        if ($id === NULL || $id <= 0) {
+            $this->set_response([
+                'status' => FALSE,
+                'message' => 'Invalid request'
+                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+        }
+        $validateAcount = $this->AccountModel->validateAccountNumber($id);
+
+
+        if ($validateAcount) { //account number validate
+            $balance = $this->TransactionModel->balace($id);
+            $message = [
+                'accountNumber' => $id,
+                'balace' => $balance,
+            ];
+            $this->set_response($message, REST_Controller::HTTP_OK);
+        } else {
+            $this->set_response([
+                'status' => FALSE,
+                'message' => 'Account could not be found'
+                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+        }
+    }
+
+    //debit or credit 
     public function transaction_post() {
         $type = $this->input->post('type');
         $amount = $this->input->post('amount');
         $accountNumber = $this->input->post('accountNumber');
-        echo $type.$amount.$accountNumber;
+        $description = $this->input->post('description');
+        if ($type == "" || $amount == "" || $accountNumber == "" || !is_numeric($amount) || !is_numeric($accountNumber)) {
+            //validate parameters
+            $this->set_response([
+                'status' => FALSE,
+                'message' => 'Invalid request'
+                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+        }
+
+        if (!($type == "credit" || $type == "debit")) { // type validate
+            $this->set_response([
+                'status' => FALSE,
+                'message' => 'Invalid Transaction type '
+                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+        }
+        $validateAcount = $this->AccountModel->validateAccountNumber($accountNumber);
+        if (!$validateAcount) { //account number validate
+            $this->set_response([
+                'status' => FALSE,
+                'message' => 'Account could not be found'
+                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+        }
+        if ($type == "debit") {
+            $debit = $this->TransactionModel->saveTransaction($accountNumber, '0.00', $amount, $description);
+            if ($debit) {
+                $message = [
+                    'accountNumber' => $accountNumber,
+                    'message' => 'Transaction success'
+                ];
+                $this->set_response($message, REST_Controller::HTTP_CREATED); // CREATED (201) being the HTTP response code
+            } else {
+                $this->set_response([
+                    'status' => FALSE,
+                    'message' => 'Transaction Fail'
+                        ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+            }
+        }
+        if ($type == "credit") {
+            $balance = $this->TransactionModel->balace($accountNumber);
+            if ($balance < $amount) {
+                $this->set_response([
+                    'status' => FALSE,
+                    'message' => 'Transaction Fail,insufficient balance for this transaction !'
+                        ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+            } else {
+                $credit = $this->TransactionModel->saveTransaction($accountNumber, $amount, '0.00', $description);
+                if ($credit) {
+                    $message = [
+                        'accountNumber' => $accountNumber,
+                        'message' => 'Transaction success'
+                    ];
+                    $this->set_response($message, REST_Controller::HTTP_CREATED); // CREATED (201) being the HTTP response code
+                } else {
+                    $this->set_response([
+                        'status' => FALSE,
+                        'message' => 'Transaction Fail'
+                            ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+                }
+            }
+        }
     }
 
 }
