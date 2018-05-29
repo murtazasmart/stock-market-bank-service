@@ -73,21 +73,38 @@ class Bank extends REST_Controller {
                 'message' => 'Account name duplicate'
                     ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
         } else {
-           $accountNumber= $this->AccountModel->createNewAccount($Name);
-           if($accountNumber =='' || $accountNumber == NULL){
-               $this->set_response([
-                'status' => FALSE,
-                'message' => 'Account Not Created'
-                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
-           } else {
-                 $message = [
-                     'accountNumber' => $accountNumber,
-                    'Name' => $Name,
-                    'message' => 'Added new account'
-                ];
-                 $this->set_response($message, REST_Controller::HTTP_CREATED); // CREATED (201) being the HTTP response code
-           }
+            $accountNumber = $this->AccountModel->createNewAccount($Name);
+            if ($accountNumber == '' || $accountNumber == NULL) {
+                $this->set_response([
+                    'status' => FALSE,
+                    'message' => 'Account Not Created'
+                        ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+            } else {
+                $openBal = $this->AccountModel->saveTransaction($accountNumber, '0.00', '1000.00', 'Opening Balance'); // opening balance
+                if ($openBal) {
+                    $message = [
+                        'accountNumber' => $accountNumber,
+                        'Name' => $Name,
+                        'message' => 'Added new account'
+                    ];
+                    $this->set_response($message, REST_Controller::HTTP_CREATED); // CREATED (201) being the HTTP response code
+                } else {
+                    // account not created , unable to save opening bal
+                    $this->AccountModel->deleteAccount($accountNumber);
+                    $this->set_response([
+                        'status' => FALSE,
+                        'message' => 'Account Not Created'
+                            ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+                }
+            }
         }
+    }
+
+    public function transaction_post() {
+        $type = $this->input->post('type');
+        $amount = $this->input->post('amount');
+        $accountNumber = $this->input->post('accountNumber');
+        echo $type.$amount.$accountNumber;
     }
 
 }

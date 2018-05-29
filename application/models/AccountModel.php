@@ -33,5 +33,16 @@ class AccountModel extends CI_Model {
             return $last_id;
             
     }
+    public function saveTransaction($accountNumber,$credit,$debit,$description) {
+        $sql="INSERT INTO `transaction`( `accountnumber`, `credit`, `debit`, `description`) VALUES ('$accountNumber','$credit','$debit','$description')";
+        return $this->db->query($sql);
+     
+    }
+    public function deleteAccount($accountNumber) {
+     
+             $sql = "Delete FROM `bankaccount` where accountNumber='$accountNumber'";
+             return $this->db->query($sql);
+    
+    }
 
 }
