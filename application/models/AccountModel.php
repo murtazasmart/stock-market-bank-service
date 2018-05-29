@@ -49,5 +49,12 @@ class AccountModel extends CI_Model {
         $sql = "Delete FROM `bankaccount` where accountNumber='$accountNumber'";
         return $this->db->query($sql);
     }
+    
+    public function startgame() {
+        $this->db->trans_start();
+        $this->db->query("DELETE FROM `bankaccount` WHERE 1"); 
+        $this->db->query("ALTER TABLE bankaccount  AUTO_INCREMENT=10001"); 
+        return $this->db->trans_complete();
+    }
 
 }

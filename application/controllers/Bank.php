@@ -221,5 +221,23 @@ class Bank extends REST_Controller {
                     ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
         }
     }
+    
+    public function startgame_get() { 
+      $res=  $this->AccountModel->startgame();
+      if($res){
+         $message = [
+            'status' => 'success',
+            'message' => 'Ready to start game'
+      ];
+          $this->set_response($message, REST_Controller::HTTP_OK); // NO_CONTENT (204) being the HTTP response code
+      }else{
+           $this->set_response([
+                'status' => FALSE,
+                'message' => 'Not ready to start game'
+                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+      }
+
+       
+    }
 
 }
