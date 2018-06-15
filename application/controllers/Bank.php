@@ -60,45 +60,49 @@ class Bank extends REST_Controller {
     }
 
     public function account_post() {
-        $Name = $this->input->post('Name');
+        $inputJSON = file_get_contents('php://input');
+        $input = json_decode($inputJSON, TRUE);
+        $Name = $input['Name']; 
         if ($Name == "" || $Name == NULL) {
             $this->response([
                 'status' => FALSE,
                 'message' => 'Invalid Account Name'
                     ], REST_Controller::HTTP_BAD_REQUEST);
-        }
-        $count = $this->AccountModel->validateAccountName($Name);
-        if ($count != 0) {
-            $this->set_response([
-                'status' => FALSE,
-                'message' => 'Account name duplicate'
-                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
-        } else {
-            $accountNumber = $this->AccountModel->createNewAccount($Name);
-            if ($accountNumber == '' || $accountNumber == NULL) {
-                $this->set_response([
-                    'status' => FALSE,
-                    'message' => 'Account Not Created'
-                        ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
-            } else {
-                $openBal = $this->TransactionModel->saveTransaction($accountNumber, '0.00', '1000.00', 'Opening Balance'); // opening balance
-                if ($openBal) {
-                    $message = [
-                        'accountNumber' => $accountNumber,
-                        'Name' => $Name,
-                        'message' => 'Added new account'
-                    ];
-                    $this->set_response($message, REST_Controller::HTTP_CREATED); // CREATED (201) being the HTTP response code
-                } else {
-                    // account not created , unable to save opening bal
-                    $this->AccountModel->deleteAccount($accountNumber);
+        }  else { 
+            $count = $this->AccountModel->validateAccountName($Name);
+                if ($count != 0) {
                     $this->set_response([
                         'status' => FALSE,
-                        'message' => 'Account Not Created'
+                        'message' => 'Account name duplicate'
                             ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
-                }
-            }
+                } else {
+                    $accountNumber = $this->AccountModel->createNewAccount($Name);
+                    if ($accountNumber == '' || $accountNumber == NULL) {
+                        $this->set_response([
+                            'status' => FALSE,
+                            'message' => 'Account Not Created'
+                                ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+                    } else {
+                        $openBal = $this->TransactionModel->saveTransaction($accountNumber, '0.00', '1000.00', 'Opening Balance'); // opening balance
+                        if ($openBal) {
+                            $message = [
+                                'accountNumber' => $accountNumber,
+                                'Name' => $Name,
+                                'message' => 'Added new account'
+                            ];
+                            $this->set_response($message, REST_Controller::HTTP_CREATED); // CREATED (201) being the HTTP response code
+                        } else {
+                            // account not created , unable to save opening bal
+                            $this->AccountModel->deleteAccount($accountNumber);
+                            $this->set_response([
+                                'status' => FALSE,
+                                'message' => 'Account Not Created'
+                                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+                        }
+                    }
+                   }
         }
+        
     }
 
     public function balance_get() {
@@ -110,38 +114,40 @@ class Bank extends REST_Controller {
                 'status' => FALSE,
                 'message' => 'Invalid request'
                     ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+        }  else {
+            $validateAcount = $this->AccountModel->validateAccountNumber($id);
+                if ($validateAcount) { //account number validate
+                    $balance = $this->TransactionModel->balace($id);
+                    $message = [
+                        'accountNumber' => $id,
+                        'balace' => $balance,
+                    ];
+                    $this->set_response($message, REST_Controller::HTTP_OK);
+                } else {
+                    $this->set_response([
+                        'status' => FALSE,
+                        'message' => 'Account could not be found'
+                            ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+                }
         }
-        $validateAcount = $this->AccountModel->validateAccountNumber($id);
-
-
-        if ($validateAcount) { //account number validate
-            $balance = $this->TransactionModel->balace($id);
-            $message = [
-                'accountNumber' => $id,
-                'balace' => $balance,
-            ];
-            $this->set_response($message, REST_Controller::HTTP_OK);
-        } else {
-            $this->set_response([
-                'status' => FALSE,
-                'message' => 'Account could not be found'
-                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
-        }
+        
     }
 
     //debit or credit 
     public function transaction_post() {
-        $type = $this->input->post('type');
-        $amount = $this->input->post('amount');
-        $accountNumber = $this->input->post('accountNumber');
-        $description = $this->input->post('description');
+        $inputJSON = file_get_contents('php://input');
+        $input = json_decode($inputJSON, TRUE);
+        $type = $input['type'];
+        $amount = $input['amount'];
+        $accountNumber = $input['accountNumber'];
+        $description = $input['description'];
         if ($type == "" || $amount == "" || $accountNumber == "" || !is_numeric($amount) || !is_numeric($accountNumber)) {
             //validate parameters
             $this->set_response([
                 'status' => FALSE,
                 'message' => 'Invalid request'
                     ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
-        }
+        }else {
 
         if (!($type == "credit" || $type == "debit")) { // type validate
             $this->set_response([
@@ -150,13 +156,15 @@ class Bank extends REST_Controller {
                     ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
         }
         $validateAcount = $this->AccountModel->validateAccountNumber($accountNumber);
+        
         if (!$validateAcount) { //account number validate
             $this->set_response([
                 'status' => FALSE,
                 'message' => 'Account could not be found'
                     ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
-        }
-        if ($type == "debit") {
+            
+        }  else {
+                 if ($type == "debit") {
             $debit = $this->TransactionModel->saveTransaction($accountNumber, '0.00', $amount, $description);
             if ($debit) {
                 $message = [
@@ -194,6 +202,10 @@ class Bank extends REST_Controller {
                 }
             }
         }
+            
+        }
+        
+        }
     }
 
     public function statement_get() {
@@ -203,8 +215,8 @@ class Bank extends REST_Controller {
                 'status' => FALSE,
                 'message' => 'Invalid request'
                     ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
-        }
-        $validateAcount = $this->AccountModel->validateAccountNumber($id);
+        }  else {
+            $validateAcount = $this->AccountModel->validateAccountNumber($id);
 
 
         if ($validateAcount) { //account number validate
@@ -220,6 +232,8 @@ class Bank extends REST_Controller {
                 'message' => 'Account could not be found'
                     ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
         }
+        }
+        
     }
     
     public function startgame_get() { 
@@ -239,5 +253,10 @@ class Bank extends REST_Controller {
 
        
     }
+    
+    
+    
+    
+    
 
 }
