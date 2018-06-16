@@ -103,30 +103,32 @@ class Bank extends REST_Controller {
             }
         }
     }
-    public function account_delete($id=NULL) {
-        if ($id === NULL || $id <= 0) {
-            $this->set_response([
-                'status' => FALSE,
-                'message' => 'Invalid request'
-                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
-        }else{
-            $validateAcount = $this->AccountModel->validateAccountNumber($id);
-            if ($validateAcount) { //account number validate
-                $this->AccountModel->deleteAccount($id);
-                $message = [
-                    'status' => TRUE,
-                    'accountNumber'=>$id,
-                     'message' => 'Account Removed'
-                ];
-                $this->set_response($message, REST_Controller::HTTP_OK);
-            }else{
-                $this->set_response([
-                    'status' => FALSE,
-                    'accountNumber'=>$id,
-                    'message' => 'Account not found'
-                        ], REST_Controller::HTTP_BAD_REQUEST);
-            }
-        }
+    public function account_delete($id=NULL) { 
+        $data = array('returned: '. $this->delete('id'));
+        $this->response($data);
+//        if ($id === NULL || $id <= 0) {
+//            $this->set_response([
+//                'status' => FALSE,
+//                'message' => 'Invalid request'
+//                    ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+//        }else{
+//            $validateAcount = $this->AccountModel->validateAccountNumber($id);
+//            if ($validateAcount) { //account number validate
+//                $this->AccountModel->deleteAccount($id);
+//                $message = [
+//                    'status' => TRUE,
+//                    'accountNumber'=>$id,
+//                     'message' => 'Account Removed'
+//                ];
+//                $this->set_response($message, REST_Controller::HTTP_OK);
+//            }else{
+//                $this->set_response([
+//                    'status' => FALSE,
+//                    'accountNumber'=>$id,
+//                    'message' => 'Account not found'
+//                        ], REST_Controller::HTTP_BAD_REQUEST);
+//            }
+//        }
     }
 
     public function balance_get($id = NULL) {
