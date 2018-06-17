@@ -30,4 +30,16 @@ A fully RESTful server implementation for CodeIgniter using one library, one con
 
 
 
+*************
+How To SetUp
+*************
+1.Get a clone from repository.
+2.Now copy it to your PHP and MySQL enabled server. In this tutorial we are using  WAMP(Windows, Apache, Mysql, PHP). So copy it on C:wampwww
+3.Configuring CodeIgniter
+For running CodeIgniter application you need to setup the right base URL of the app. To do this, open up C:/wamp/www/CodeIgniter/application/config/config.php and edit the base_url array item to point to your server and CodeIgniter folder.
+
+
+
+
+
 
