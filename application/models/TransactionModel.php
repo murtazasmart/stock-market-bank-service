@@ -19,9 +19,9 @@ class TransactionModel extends CI_Model {
     }
     
     public function balace($accountNumber) { 
-        $sql="SELECT tble1.debit-tble1.credit as 'balace' from (SELECT sum(debit) as 'debit',SUM(credit) as 'credit' from transaction where accountnumber='$accountNumber') as `tble1`";
+        $sql="SELECT tble1.credit-tble1.debit as 'balace' from (SELECT sum(debit) as 'debit',SUM(credit) as 'credit' from transaction where accountnumber='$accountNumber') as `tble1`";
         $res= $this->db->query($sql)->result();
-        return $res[0]->balace;
+        return $res[0]->balace; 
         
     }
     public function getBanakStatement($id) {

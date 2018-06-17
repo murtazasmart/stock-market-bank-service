@@ -200,30 +200,15 @@ class Bank extends REST_Controller {
                         ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
             } else {
                 if ($type == "debit") {
-                    $debit = $this->TransactionModel->saveTransaction($accountNumber, '0.00', $amount, $description);
-                    if ($debit) {
-                        $message = [
-                            'accountNumber' => $accountNumber,
-                            'message' => 'Transaction success'
-                        ];
-                        $this->set_response($message, REST_Controller::HTTP_CREATED); // CREATED (201) being the HTTP response code
-                    } else {
-                        $this->set_response([
-                            'status' => FALSE,
-                            'message' => 'Transaction Fail'
-                                ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
-                    }
-                }
-                if ($type == "credit") {
-                    $balance = $this->TransactionModel->balace($accountNumber);
+                     $balance = $this->TransactionModel->balace($accountNumber);
                     if ($balance < $amount) {
                         $this->set_response([
                             'status' => FALSE,
                             'message' => 'Transaction Fail,insufficient balance for this transaction !'
                                 ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
                     } else {
-                        $credit = $this->TransactionModel->saveTransaction($accountNumber, $amount, '0.00', $description);
-                        if ($credit) {
+                        $debit = $this->TransactionModel->saveTransaction($accountNumber, '0.00',$amount , $description);
+                        if ($debit) {
                             $message = [
                                 'accountNumber' => $accountNumber,
                                 'message' => 'Transaction success'
@@ -235,6 +220,21 @@ class Bank extends REST_Controller {
                                 'message' => 'Transaction Fail'
                                     ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
                         }
+                    }
+                }
+                if ($type == "credit") {
+                    $credit = $this->TransactionModel->saveTransaction($accountNumber, $amount,'0.00', $description);
+                    if (credit) {
+                        $message = [
+                            'accountNumber' => $accountNumber,
+                            'message' => 'Transaction success'
+                        ];
+                        $this->set_response($message, REST_Controller::HTTP_CREATED); // CREATED (201) being the HTTP response code
+                    } else {
+                        $this->set_response([
+                            'status' => FALSE,
+                            'message' => 'Transaction Fail'
+                                ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
                     }
                 }
             }
