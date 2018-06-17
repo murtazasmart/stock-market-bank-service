@@ -38,10 +38,41 @@ How To SetUp
 2.Now copy it to your PHP and MySQL enabled server. In this tutorial we are using  
 WAMP(Windows, Apache, Mysql, PHP). So copy it on C:wampwww
 
-3.Configuring CodeIgniter
+3.Configuring CodeIgniter : 
 For running CodeIgniter application you need to setup the right base URL of the app. 
-To do this, open up C:/wamp/www/CodeIgniter/application/config/config.php and edit 
+To do this, open up C:/wamp/www/stock-market-bank-service/application/config/config.php and edit 
 the base_url array item to point to your server and CodeIgniter folder.
+Syntax:
+
+//you can find this at line number 17
+$config['base_url'] = "http://localhost/stock-market-bank-service/";
+
+
+4.Database configuration : 
+To connect with database CodeIgniter provides a configuration file in config folder with name database.php. 
+Below is the mentioned path:-C:/wamp/www/stock-market-bank-service/application/config/database.php
+
+To setup connectivity with your database you need to do the changes as mentioned in below code:
+
+
+$db['default']['hostname'] = "localhost";
+$db['default']['username'] = "root"; // Your username if required.
+$db['default']['password'] = ""; // Your password if any.
+$db['default']['database'] = "database_name"; // Your database name.
+$db['default']['dbdriver'] = "mysql";
+$db['default']['dbprefix'] = "";
+$db['default']['pconnect'] = TRUE;
+$db['default']['db_debug'] = FALSE;
+$db['default']['cache_on'] = FALSE;
+$db['default']['cachedir'] = "";
+$db['default']['char_set'] = "utf8";
+$db['default']['dbcollat'] = "utf8_general_ci";
+$db['default']['swap_pre'] = "";
+$db['default']['autoinit'] = TRUE;
+$db['default']['stricton'] = FALSE;
+
+
+
 
 
 
