@@ -55,21 +55,16 @@ Below is the mentioned path:-C:/wamp/www/stock-market-bank-service/application/c
 To setup connectivity with your database you need to do the changes as mentioned in below code:
 
 
-$db['default']['hostname'] = "localhost"; \n
+$db['default']['hostname'] = "localhost";
+
 $db['default']['username'] = "root"; // Your username if required.
+
 $db['default']['password'] = ""; // Your password if any.
+
 $db['default']['database'] = "database_name"; // Your database name.
-$db['default']['dbdriver'] = "mysql";
-$db['default']['dbprefix'] = "";
-$db['default']['pconnect'] = TRUE;
-$db['default']['db_debug'] = FALSE;
-$db['default']['cache_on'] = FALSE;
-$db['default']['cachedir'] = "";
-$db['default']['char_set'] = "utf8";
-$db['default']['dbcollat'] = "utf8_general_ci";
-$db['default']['swap_pre'] = "";
-$db['default']['autoinit'] = TRUE;
-$db['default']['stricton'] = FALSE;
+
+$db['default']['dbdriver'] = "mysqli";
+
 
 
 
