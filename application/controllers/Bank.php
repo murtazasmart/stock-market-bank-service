@@ -3,8 +3,14 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Description of Bank
- *
+ * Description of Bank API
+ * 
+ * Create new accounts
+ * Debit/Credit money
+ * Balace check
+ * History of previous transaction
+ * Delete account
+ * 
  * @author Lalendra
  */
 require APPPATH . 'libraries/REST_Controller.php';
@@ -19,9 +25,8 @@ class Bank extends REST_Controller {
     public function index(){
         echo "<h2>Bank API - UCD CS batch 7 final project_ team exit - https://github.com/murtazasmart/stock-market-bank-service</h2>";
     }
-
+    //get account details 
     public function account_get($id = NULL) {
-//        $id = $this->get('id');
 
         if ($id === NULL) {
             $accounts = $this->AccountModel->getAllAccount();
@@ -61,7 +66,8 @@ class Bank extends REST_Controller {
                     ], REST_Controller::HTTP_NOT_FOUND); // NOT_FOUND (404) being the HTTP response code
         }
     }
-
+    
+    //Create new account
     public function account_post() {
         $inputJSON = file_get_contents('php://input');
         $input = json_decode($inputJSON, TRUE);
@@ -86,6 +92,7 @@ class Bank extends REST_Controller {
                         'message' => 'Account Not Created'
                             ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
                 } else {
+                    //adding opening balace
                     $openBal = $this->TransactionModel->saveTransaction($accountNumber, '0.00', '1000.00', 'Opening Balance'); // opening balance
                     if ($openBal) {
                         $message = [
@@ -106,6 +113,8 @@ class Bank extends REST_Controller {
             }
         }
     }
+    
+    //delete account
     public function account_delete($id=NULL) { 
         
         if ($id === NULL || $id <= 0) {
@@ -132,11 +141,11 @@ class Bank extends REST_Controller {
             }
         }
     }
-
+    
+    
+    //Balace check
     public function balance_get($id = NULL) {
 //        $id = $this->get('id');
-
-
         if ($id === NULL || $id <= 0) {
             $this->set_response([
                 'status' => FALSE,
@@ -231,7 +240,9 @@ class Bank extends REST_Controller {
             }
         }
     }
-
+    
+    
+    //History of previous transactions
     public function statement_get($id = NULL) {
 //        $id = $this->get('id');
         if ($id === NULL || $id <= 0) {
@@ -258,7 +269,9 @@ class Bank extends REST_Controller {
             }
         }
     }
-
+    
+    
+    //Clear database
     public function startgame_get() {
         $res = $this->AccountModel->startgame();
         if ($res) {
