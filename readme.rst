@@ -22,4 +22,12 @@ It should work on 5.3.7 as well, but we strongly advise you NOT to run
 such old versions of PHP, because of potential security and performance
 issues, as well as missing features.
 
+***********************
+CodeIgniter Rest Server
+***********************
+
+A fully RESTful server implementation for CodeIgniter using one library, one config file and one controller.
+
+
+
 
