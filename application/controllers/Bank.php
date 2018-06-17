@@ -15,7 +15,7 @@ class Bank extends REST_Controller {
         parent::__construct();
         $this->load->model("AccountModel");
         $this->load->model("TransactionModel");
-    }
+    } 
     public function index(){
         echo "<h2>Bank API - UCD CS batch 7 final project_ team exit - https://github.com/murtazasmart/stock-market-bank-service</h2>";
     }
