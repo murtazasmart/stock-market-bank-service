@@ -93,7 +93,7 @@ class Bank extends REST_Controller {
                             ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
                 } else {
                     //adding opening balace
-                    $openBal = $this->TransactionModel->saveTransaction($accountNumber, '0.00', '1000.00', 'Opening Balance'); // opening balance
+                    $openBal = $this->TransactionModel->saveTransaction($accountNumber, '1000.00', '0.00', 'Opening Balance'); // opening balance
                     if ($openBal) {
                         $message = [
                             'accountNumber' => $accountNumber,
