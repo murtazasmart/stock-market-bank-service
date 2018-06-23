@@ -23,8 +23,10 @@ class AccountModel extends CI_Model {
         return $this->db->query($sql)->result();
     }
 
+//    public function validateAccountName($name,$gameID) {
     public function validateAccountName($name) {
-        $sql = "SELECT name FROM `bankaccount` where name='$name'";
+//        $sql = "SELECT name FROM `bankaccount` where name='$name' and gameId='$gameID'";
+        $sql = "SELECT name FROM `bankaccount` where name='$name' ";
         return count($this->db->query($sql)->result());
     }
 

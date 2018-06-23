@@ -74,12 +74,16 @@ class Bank extends REST_Controller {
         $inputJSON = file_get_contents('php://input');
         $input = json_decode($inputJSON, TRUE);
         $Name = $input['Name'];
+//        $gameID = $input['gameID'];
+//        if ($Name == "" || $Name == NULL || $gameID=="" || $gameID==NULL) {
         if ($Name == "" || $Name == NULL) {
             $this->response([
                 'status' => FALSE,
-                'message' => 'Invalid Account Name'
+//                'message' => 'Invalid Account Name or game id',
+                'message' => 'Invalid Account Name ',
                     ], REST_Controller::HTTP_BAD_REQUEST);
         } else {
+//            $count = $this->AccountModel->validateAccountName($Name,$gameID);
             $count = $this->AccountModel->validateAccountName($Name);
             if ($count != 0) {
                 $this->set_response([
