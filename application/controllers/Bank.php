@@ -140,7 +140,7 @@ class Bank extends REST_Controller {
             } else {
                 $this->response([
                     'status' => FALSE,
-                    'message' => 'Invalid Request game id !'
+                    'message' => 'Invalid Request, game id not found !'
                         ], REST_Controller::HTTP_BAD_REQUEST);
             }
         }
