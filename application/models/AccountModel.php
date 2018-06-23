@@ -56,5 +56,11 @@ class AccountModel extends CI_Model {
         $this->db->query("ALTER TABLE bankaccount  AUTO_INCREMENT=10001"); 
         return $this->db->trans_complete();
     }
+    
+      //updateGameId
+     function updateGameID($oldId,$newId) {
+        $sql="update bankaccount set gameId='$newId' where gameId='$oldId'";
+        return $this->db->query($sql);
+    }
 
 }

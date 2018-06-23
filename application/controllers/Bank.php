@@ -21,10 +21,12 @@ class Bank extends REST_Controller {
         parent::__construct();
         $this->load->model("AccountModel");
         $this->load->model("TransactionModel");
-    } 
-    public function index(){
+    }
+
+    public function index() {
         echo "<h2>Bank API - UCD CS batch 7 final project_ team exit - https://github.com/murtazasmart/stock-market-bank-service</h2>";
     }
+
     //get account details 
     public function account_get($id = NULL) {
 
@@ -66,7 +68,7 @@ class Bank extends REST_Controller {
                     ], REST_Controller::HTTP_NOT_FOUND); // NOT_FOUND (404) being the HTTP response code
         }
     }
-    
+
     //Create new account
     public function account_post() {
         $inputJSON = file_get_contents('php://input');
@@ -113,36 +115,65 @@ class Bank extends REST_Controller {
             }
         }
     }
-    
+
+    //updateGameId
+    public function updategameid_post() {
+        $inputJSON = file_get_contents('php://input');
+        $input = json_decode($inputJSON, TRUE);
+        $oldId = $input['oldId'];
+        $newId = $input['newId'];
+        exit($oldId.$newId);
+        if ($oldId == "" || $newId == "" || is_null($newId) || is_null($oldId)) {
+            $this->response([
+                'status' => FALSE,
+                'message' => 'Invalid Request !'
+                    ], REST_Controller::HTTP_BAD_REQUEST);
+        } else {
+            $update = $this->AccountModel->updateGameID($oldId, $newId);
+            if ($update) {
+                $this->response([
+                    'status' => TRUE,
+                    'oldId' => $oldId,
+                    'newId' => $newId,
+                    'message' => 'Game ID updated !'
+                        ], REST_Controller::HTTP_OK);
+            } else {
+                $this->response([
+                    'status' => FALSE,
+                    'message' => 'Invalid Request game id !'
+                        ], REST_Controller::HTTP_BAD_REQUEST);
+            }
+        }
+    }
+
     //delete account
-    public function account_delete($id=NULL) { 
-        
+    public function account_delete($id = NULL) {
+
         if ($id === NULL || $id <= 0) {
             $this->set_response([
                 'status' => FALSE,
                 'message' => 'Invalid request'
                     ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
-        }else{
+        } else {
             $validateAcount = $this->AccountModel->validateAccountNumber($id);
             if ($validateAcount) { //account number validate
                 $this->AccountModel->deleteAccount($id);
                 $message = [
                     'status' => TRUE,
-                    'accountNumber'=>$id,
-                     'message' => 'Account Removed'
+                    'accountNumber' => $id,
+                    'message' => 'Account Removed'
                 ];
                 $this->set_response($message, REST_Controller::HTTP_OK);
-            }else{
+            } else {
                 $this->set_response([
                     'status' => FALSE,
-                    'accountNumber'=>$id,
+                    'accountNumber' => $id,
                     'message' => 'Account not found'
                         ], REST_Controller::HTTP_BAD_REQUEST);
             }
         }
     }
-    
-    
+
     //Balace check
     public function balance_get($id = NULL) {
 //        $id = $this->get('id');
@@ -200,14 +231,14 @@ class Bank extends REST_Controller {
                         ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
             } else {
                 if ($type == "debit") {
-                     $balance = $this->TransactionModel->balace($accountNumber);
+                    $balance = $this->TransactionModel->balace($accountNumber);
                     if ($balance < $amount) {
                         $this->set_response([
                             'status' => FALSE,
                             'message' => 'Transaction Fail,insufficient balance for this transaction !'
                                 ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
                     } else {
-                        $debit = $this->TransactionModel->saveTransaction($accountNumber, '0.00',$amount , $description);
+                        $debit = $this->TransactionModel->saveTransaction($accountNumber, '0.00', $amount, $description);
                         if ($debit) {
                             $message = [
                                 'accountNumber' => $accountNumber,
@@ -223,7 +254,7 @@ class Bank extends REST_Controller {
                     }
                 }
                 if ($type == "credit") {
-                    $credit = $this->TransactionModel->saveTransaction($accountNumber, $amount,'0.00', $description);
+                    $credit = $this->TransactionModel->saveTransaction($accountNumber, $amount, '0.00', $description);
                     if (credit) {
                         $message = [
                             'accountNumber' => $accountNumber,
@@ -240,8 +271,7 @@ class Bank extends REST_Controller {
             }
         }
     }
-    
-    
+
     //History of previous transactions
     public function statement_get($id = NULL) {
 //        $id = $this->get('id');
@@ -269,8 +299,7 @@ class Bank extends REST_Controller {
             }
         }
     }
-    
-    
+
     //Clear database
     public function startgame_get() {
         $res = $this->AccountModel->startgame();
@@ -287,6 +316,5 @@ class Bank extends REST_Controller {
                     ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
         }
     }
-    
 
 }
