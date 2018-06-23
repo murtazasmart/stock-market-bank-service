@@ -130,6 +130,8 @@ class Bank extends REST_Controller {
                     ], REST_Controller::HTTP_BAD_REQUEST);
         } else {
             $update = $this->AccountModel->updateGameID($oldId, $newId);
+            print_r($update);
+            exit();
             if ($update) {
                 $this->response([
                     'status' => TRUE,
