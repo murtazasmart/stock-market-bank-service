@@ -122,7 +122,7 @@ class Bank extends REST_Controller {
         $input = json_decode($inputJSON, TRUE);
         $oldId = $input['oldId'];
         $newId = $input['newId'];
-        exit($oldId.$newId);
+//        exit($oldId.$newId);
         if ($oldId == "" || $newId == "" || is_null($newId) || is_null($oldId)) {
             $this->response([
                 'status' => FALSE,
